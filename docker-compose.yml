@@ -1,0 +1,102 @@
+#version: '3.9'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: always
+    ports:
+      - "5678:5678"   # puerto expuesto para acceder a n8n
+    environment:
+      # Variables para EvolutionAPI local
+      SERVER_NAME: evolution
+      SERVER_TYPE: http
+      SERVER_PORT: 8080
+      SERVER_URL: http://host.docker.internal:8080  # host.docker.internal para acceder al localhost del host desde Docker
+      SERVER_DISABLE_DOCS: "false"
+      SERVER_DISABLE_MANAGER: "false"
+
+      CORS_ORIGIN: "*"
+      CORS_METHODS: "POST,GET,PUT,DELETE"
+      CORS_CREDENTIALS: "true"
+
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://username:password@db:5432/evolution_api
+
+      DATABASE_CONNECTION_CLIENT_NAME: evolution
+      DATABASE_SAVE_DATA_INSTANCE: "true"
+      DATABASE_SAVE_DATA_NEW_MESSAGE: "true"
+      DATABASE_SAVE_MESSAGE_UPDATE: "true"
+      DATABASE_SAVE_DATA_CONTACTS: "true"
+      DATABASE_SAVE_DATA_CHATS: "true"
+      DATABASE_SAVE_DATA_HISTORIC: "true"
+      DATABASE_SAVE_DATA_LABELS: "true"
+      DATABASE_SAVE_IS_ON_WHATSAPP: "true"
+      DATABASE_SAVE_IS_ON_WHATSAPP_DAYS: 7
+      DATABASE_DELETE_MESSAGE: "false"
+
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://redis:6379
+      CACHE_REDIS_PREFIX_KEY: evolution-cache
+      CACHE_REDIS_TTL: 604800
+      CACHE_REDIS_SAVE_INSTANCES: "true"
+
+      CACHE_LOCAL_ENABLED: "true"
+      CACHE_LOCAL_TTL: 86400
+
+      AUTHENTICATION_API_KEY: BQYHJGJHJ
+      AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: "false"
+
+      LOG_LEVEL: ERROR,WARN,DEBUG,INFO,LOG,VERBOSE,DARK,WEBHOOKS,WEBSOCKET
+      LOG_COLOR: "true"
+      LOG_BAILEYS: error
+
+      DEL_INSTANCE: "false"
+      DEL_TEMP_INSTANCES: "true"
+
+      LANGUAGE: pt-BR
+
+      WEBHOOK_GLOBAL_ENABLED: "false"
+      WEBSOCKET_ENABLED: "true"
+      WEBSOCKET_GLOBAL_EVENTS: "true"
+
+      TELEMETRY_ENABLED: "true"
+
+      # Otros valores opcionales pueden agregarse aquí si se requieren
+
+    depends_on:
+      - redis
+      - db
+    networks:
+      - evolution_net
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - evolution_net
+
+  db:
+    image: postgres:15-alpine
+    container_name: evolution_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: evolution_api
+    ports:
+      - "4432:5432"
+    volumes:
+      - evolution_db_data:/var/lib/postgresql/data
+    networks:
+      - evolution_net
+
+volumes:
+  evolution_db_data:
+
+networks:
+  evolution_net:
+    driver: bridge
