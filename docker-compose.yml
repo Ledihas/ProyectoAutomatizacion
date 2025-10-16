@@ -6,27 +6,18 @@ services:
     container_name: n8n
     restart: always
     ports:
-      - "5678:5678"   # puerto expuesto para acceder a n8n
+      - "5678:5678"
     environment:
-     - N8N_HOST=45.61.157.201
-     - N8N_PORT=5678
-     - N8N_PROTOCOL=http
-     - N8N_PUBLIC_URL=http://45.61.157.201/
-     - N8N_EDITOR_BASE_URL=http://45.61.157.201/
-     - N8N_SECURE_COOKIE=false
-     - N8N_TRUSTED_PROXIES=loopback,linklocal,uniquelocal,172.17.0.0/16,0.0.0.0/0
-
-
-      # Otros valores opcionales pueden agregarse aquí si se requieren
-
-    depends_on:
-      - redis
-      - db
-    networks:
-      - evolution_net
-    
+      - N8N_PORT=5678
+      - N8N_HOST=0.0.0.0
+      - N8N_PROTOCOL=http
+      - N8N_EDITOR_BASE_URL=http://45.61.157.201:5678
+      - N8N_PUBLIC_URL=http://45.61.157.201:5678
+      - WEBHOOK_URL=http://45.61.157.201:5678
+      - N8N_SECURE_COOKIE=false
     volumes:
-      - n8n_data:/home/node/.n8n
+      - /root/n8n_data:/home/node/.n8n
+
 
   redis:
     image: redis:alpine
