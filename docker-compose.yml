@@ -17,7 +17,7 @@ services:
      - N8N_PUBLIC_URL=http://45.61.157.201/n8n/
      - WEBHOOK_URL=http://45.61.157.201/n8n/
      - N8N_TRUSTED_PROXIES=loopback,linklocal,uniquelocal,172.17.0.0/16,0.0.0.0/0
-     - NODE_OPTIONS=--trust-proxy
+   
 
 
 
