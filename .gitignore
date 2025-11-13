@@ -6,6 +6,8 @@
 # Repositorios externos (usamos imágenes Docker)
 evolution-api/
 n8n-nodes-late/
+evolution-api
+n8n-nodes-late
   
   env.txt
 
