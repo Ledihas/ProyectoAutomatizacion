@@ -1,0 +1,61 @@
+# Archivos de entorno y configuración sensible
+.env
+.env.local
+.env.*.local
+
+# Repositorios externos (usamos imágenes Docker)
+evolution-api/
+n8n-nodes-late/
+  
+  env.txt
+
+# Backups
+backups/
+*.sql
+*.tar.gz
+*.zip
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+docker-compose.override.yml
+
+# Node modules
+node_modules/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Datos de volúmenes locales (si se montan localmente)
+postgres_data/
+redis_data/
+evolution_instances/
+n8n_data/
+
+# Certificados SSL
+*.pem
+*.key
+*.crt
+*.cert
+
+# Temporales
+tmp/
+temp/
+*.tmp
+
+# Documentacion
+*.md
