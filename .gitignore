@@ -2,6 +2,8 @@
 .env
 .env.local
 .env.*.local
+.env.production
+.env.netlify
 
 # Repositorios externos (usamos imágenes Docker)
 evolution-api/
@@ -29,6 +31,10 @@ docker-compose.override.yml
 
 # Node modules
 node_modules/
+
+# Build outputs
+dist/
+.netlify/
 
 # Sistema operativo
 .DS_Store

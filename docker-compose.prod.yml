@@ -57,9 +57,10 @@ services:
       - SERVER_NAME=evolution
       - SERVER_TYPE=http
       - SERVER_PORT=8080
+      # SERVER_URL: URL pública para acceso externo (desde frontend en Netlify)
       - SERVER_URL=${EVOLUTION_SERVER_URL:-http://localhost:8081}
       
-      # CORS
+      # CORS - Permite peticiones desde el frontend en Netlify
       - CORS_ORIGIN=*
       - CORS_METHODS=GET,POST,PUT,DELETE
       - CORS_CREDENTIALS=true
@@ -69,7 +70,10 @@ services:
       - LOG_COLOR=true
       - LOG_BAILEYS=error
       
-      # Database PostgreSQL
+      # Database PostgreSQL (COMUNICACIÓN INTERNA DOCKER)
+      # IMPORTANTE: Usa "postgres" (nombre del servicio) para comunicación interna
+      # NO usar "localhost" - esto permite que Evolution API se comunique con PostgreSQL
+      # dentro de la red Docker sin exponer el puerto al exterior
       - DATABASE_PROVIDER=postgresql
       - DATABASE_CONNECTION_URI=postgresql://${POSTGRES_USERNAME:-username}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DATABASE:-evolution_api}?connection_limit=20&pool_timeout=30
       - DATABASE_CONNECTION_CLIENT_NAME=evolution_exchange
@@ -81,7 +85,10 @@ services:
       - DATABASE_SAVE_DATA_LABELS=true
       - DATABASE_SAVE_DATA_HISTORIC=true
       
-      # Redis Cache
+      # Redis Cache (COMUNICACIÓN INTERNA DOCKER)
+      # IMPORTANTE: Usa "redis" (nombre del servicio) para comunicación interna
+      # NO usar "localhost" - esto permite que Evolution API se comunique con Redis
+      # dentro de la red Docker sin exponer el puerto al exterior
       - CACHE_REDIS_ENABLED=true
       - CACHE_REDIS_URI=redis://redis:6379/6
       - CACHE_REDIS_TTL=604800
@@ -133,7 +140,8 @@ services:
     environment:
       - N8N_PORT=5678
       - N8N_HOST=0.0.0.0
-      - N8N_PROTOCOL=http
+      - N8N_PROTOCOL=https
+      - N8N_PATH=${N8N_PATH:-}
       - N8N_EDITOR_BASE_URL=${N8N_EDITOR_BASE_URL:-http://localhost:5678}
       - N8N_PUBLIC_URL=${N8N_PUBLIC_URL:-http://localhost:5678}
       - WEBHOOK_URL=${N8N_WEBHOOK_URL:-http://localhost:5678}
@@ -146,35 +154,6 @@ services:
       - app_network
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:5678/healthz"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Frontend Application (Automation Project Refine)
-  frontend:
-    build:
-      context: ./Automation_Project_Refine
-      dockerfile: Dockerfile
-      args:
-        # Build args - Variables compiladas en tiempo de build
-        VITE_APPWRITE_WHATSAPP_COLLECTION_ID: ${VITE_APPWRITE_WHATSAPP_COLLECTION_ID}
-        VITE_APPWRITE_DATABASE_ID: ${VITE_APPWRITE_DATABASE_ID}
-        VITE_APPWRITE_ENDPOINT: ${VITE_APPWRITE_ENDPOINT}
-        VITE_APPWRITE_PROJECT_ID: ${VITE_APPWRITE_PROJECT_ID}
-        VITE_SERVER_URL: http://localhost:8081
-        VITE_API_KEY: ${EVOLUTION_API_KEY:-EvoAPI2024}
-        VITE_WEBHOOK_URL: ${VITE_WEBHOOK_URL}
-        VITE_BOTACO_WEBHOOK_URL: ${VITE_BOTACO_WEBHOOK_URL:-http://n8n:5678/webhook/botaco}
-    container_name: automation_frontend
-    restart: always
-    depends_on:
-      - evolution-api
-    ports:
-      - "3000:3000"
-    networks:
-      - app_network
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
